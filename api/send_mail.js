@@ -11,11 +11,12 @@ module.exports = async (req, res) => {
 
   const { subject, content, sender, senderName, sender_name, sendemame } = req.body || req.query || {};
 
-  if (!subject || !content) {
-    return res.status(400).json({ error: '缺少 subject 或 content 参数' });
+  if (!content) {
+    return res.status(400).json({ error: '缺少 content 参数' });
   }
 
   const displayName = sender || senderName || sender_name || sendemame || 'AI Companion';
+  const mailSubject = subject || '无主题';
 
   const transporter = nodemailer.createTransport({
     host: 'smtp.qq.com',
@@ -31,7 +32,7 @@ module.exports = async (req, res) => {
     const info = await transporter.sendMail({
       from: `"${displayName}" <${process.env.QQ_EMAIL}>`,
       to: process.env.TO_EMAIL || process.env.QQ_EMAIL,
-      subject: subject,
+      subject: mailSubject,
       text: content
     });
 
